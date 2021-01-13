@@ -1,5 +1,5 @@
 package beproject;
 
-public class ACCOUNTDAO {
+public class AccountDAO {
 
 }

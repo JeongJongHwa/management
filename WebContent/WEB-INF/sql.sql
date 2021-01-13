@@ -12,13 +12,13 @@ CREATE TABLE CUSTOM (
 	TEL CHAR(10),          			-- 전화번호
 	FAX CHAR(10),          			-- 팩스번호
 	HOMEPAGE CHAR(20),          	-- 홈페이지
-	CO_YN BIT,          			-- 법인여부
-	FOREIGN_YN BIT,          		-- 해외여부
-	TAX_YN BIT,          			-- 과세구분
+	CO_YN BIT,          			-- 법인여부  0 법인 1 개인
+	FOREIGN_YN BIT,          		-- 해외여부  0 국내 1  해외
+	TAX_YN BIT,          			-- 과세구분  0 과세 1 비과세
 	COUNTRY_ENG CHAR(20),           -- 국가_영문
 	COUNTRY_KOR CHAR(20),           -- 국가_한글
-	SPECIAL_RELATION BIT,           -- 특수관계자
-	TRADE_STOP BIT,          		-- 거래중지
+	SPECIAL_RELATION BIT,           -- 특수관계자  yes 1  no 0
+	TRADE_STOP BIT,          		-- 거래중지    yes 1 no 0
 	CONTRACT_PERIOD_S DATE,         -- 계약기간(시작)
 	CONTRACT_PERIOD_E DATE,         -- 계약기간(끝)
 	REGI_INFO_MAN CHAR(10),         -- 등록정보(등록인)
@@ -27,6 +27,22 @@ CREATE TABLE CUSTOM (
 	MODI_INFO_DATE DATE,         	-- 변경정보(변경날짜)
 	PRIMARY KEY(BUSI_NUM,CUSTOM)
 );
+
+INSERT INTO CUSTOM VALUES( '111-11-11111' , '동아제약' , '동아' , '동아사장' , '동아부장' ,
+'A' , '타이레놀' , '357-12' , '서울 ...' , 'xx빌딩 1401호 ',
+'025677891','025677412','ehddk123@ehkt.com',1,1,
+1,'KOR','대한민국',1,0,'20150101',
+'20180101','동아사장','20150102','동아부장','20180102' );
+INSERT INTO CUSTOM VALUES( '123-22-2345' , 'asdf동아제약' , 'asdf동아' , '동아사장' , '동아부장' ,
+'A' , '타이레놀' , '357-12' , '서울 ...' , 'xx빌딩 1401호 ',
+'025677891','025677412','ehddk123@ehkt.com',1,1,
+1,'KOR','대한민국',1,0,'20150101',
+'20180101','동아사장','20150102','동아부장','20180102' );
+INSERT INTO CUSTOM VALUES( '111-12-23451' , '흥국제약' , '흥국' , 'ㅎㄱ사장' ,
+'ㅎㄱ부장' , 'A' , '게보린' , '357-55' , '서울 ㅁㅁ...' ,
+'흥국빌딩 1401호 ','026786631','021112222','흥국123@ehdd.com',0,
+0,0,'KOR','대한민국',1,0,
+'20190202','20200202','ㅎㄱ사장','20200201','ㅎㄱ부장','20200202' );
 
 CREATE TABLE ACCOUNT(
 	BUSI_NUM CHAR(20) PRIMARY KEY,  -- 사업자번호

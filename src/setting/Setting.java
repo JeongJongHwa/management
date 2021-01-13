@@ -2,7 +2,7 @@ package setting;
 
 public class Setting {
 
-	private static String dbURL = "jdbc:mysql://localhost:3306/beproject";
+	private static String dbURL = "jdbc:mysql://localhost:3306/be?serverTimezone=Asia/Seoul";
 	private static String dbID = "root";
 	private static String dbPassword = "root";
 
