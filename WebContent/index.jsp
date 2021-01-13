@@ -76,10 +76,11 @@ $(document).ready(function(){
 			success:function(data){
 				
 				var results = data;
-	            var str = '<TR>';
+	            var str = "";
 	            $.each(results , function(i){
-	                str += '<TD>' + results[i].BUSI_NUM + '</TD><TD>' + results[i].CUSTOM + '</TD>';
-	                str += '</TR>';
+	                str += "<tr class='abab' style='cursor: pointer' rn="+results[i].BUSI_NUM+" ><td>" + results[i].BUSI_NUM +
+	                						'</td><td>' + results[i].CUSTOM + '</td>';
+	                str += '</tr>';
 	           });
 	           $('#table').append(str); 
 				
@@ -90,7 +91,64 @@ $(document).ready(function(){
 			}
 		});
 	});
+	
+	$(document).on('click','.abab',function(e){
+		console.log( $(this).attr('rn') );
+		
+		var param = {
+				BUSI_NUM:$(this).attr('rn'),	
+		};
+		
+		if( ! BUSI_NUM ){
+			alert("올바르지 않은 방식입니다.");
+		}
+		
+		$.ajax({
+			type:'post',
+			url:"MainRightSearchServlet",
+			data:JSON.stringify(param),
+			dataType:'json',
+			contentType: "application/json; charset=utf-8",
+			success:function(data){
+				
+				console.log(data);
+				
+				
+				
+				console.log( data['ACCOUNT']);
+				
+				
+				
+				
+				console.log( data['CUSTOM]'] );
+				return 0;
+				
+				var results = data;
+	            var str = "";
+	            $.each(results , function(i){
+	                str += "<tr class='abab' style='cursor: pointer' rn="+results[i].BUSI_NUM+" ><td>" + results[i].BUSI_NUM +
+	                						'</td><td>' + results[i].CUSTOM + '</td>';
+	                str += '</tr>';
+	           });
+	           $('#table').append(str); 
+				
+			},
+			error:function(request, status, error){
+				 var msg = "ERROR : " + request.status + "<br>"
+			      msg +=  + "내용 : " + request.responseText + "<br>" + error;
+			}
+		});
+		
+		
+		
+	});
+	
+	
 });
+
+function rightInfoGet(BUSI_NUM){
+	console.log(BUSI_NUM);
+}
 
 </script>
 
@@ -156,7 +214,7 @@ $(document).ready(function(){
 				</div>
 				<div class="row">
 					<div style="border: 1px solid black;">
-						<table id="table" class="table text-center table-bordered">
+						<table id="table" class="table text-center table-bordered table-hover">
 							<thead>
 								<tr class="text-center">
 									<th class="text-center">사업자 번호</th>
