@@ -113,14 +113,11 @@ $(document).ready(function(){
 				
 				console.log(data);
 				
-				
+				console.log( data['CUSTOM'] );
+				console.log( data['CUSTOM'] );
 				
 				console.log( data['ACCOUNT']);
 				
-				
-				
-				
-				console.log( data['CUSTOM]'] );
 				return 0;
 				
 				var results = data;
