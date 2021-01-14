@@ -61,9 +61,6 @@ public class MainRightSearchServlet extends HttpServlet {
 		map.put("CUSTOM", gson.toJson(custom));
 		map.put("ACCOUNT", gson.toJson(account));
 		
-		System.out.println(map.toString());
-		
-		
 		response.getWriter().print( gson.toJson( map ) );
 		//response.getWriter().print( gson.toJson(account) );
 		

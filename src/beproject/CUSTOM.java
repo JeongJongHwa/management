@@ -1,7 +1,5 @@
 package beproject;
 
-import java.util.Date;
-
 public class CUSTOM {
 
 	private String BUSI_NUM;
@@ -24,12 +22,12 @@ public class CUSTOM {
 	private String COUNTRY_KOR;
 	private boolean SPECIAL_RELATION;
 	private boolean TRADE_STOP;
-	private Date CONTRACT_PERIOD_S;
-	private Date CONTRACT_PERIOD_E;
+	private String CONTRACT_PERIOD_S;
+	private String CONTRACT_PERIOD_E;
 	private String REGI_INFO_MAN;
-	private Date REGI_INFO_DATE;
+	private String REGI_INFO_DATE;
 	private String MODI_INFO_MAN;
-	private Date MODI_INFO_DATE;
+	private String MODI_INFO_DATE;
 
 	public CUSTOM() {
 		super();
@@ -196,19 +194,19 @@ public class CUSTOM {
 		TRADE_STOP = tRADE_STOP;
 	}
 
-	public Date getCONTRACT_PERIOD_S() {
+	public String getCONTRACT_PERIOD_S() {
 		return CONTRACT_PERIOD_S;
 	}
 
-	public void setCONTRACT_PERIOD_S(Date cONTRACT_PERIOD_S) {
+	public void setCONTRACT_PERIOD_S(String cONTRACT_PERIOD_S) {
 		CONTRACT_PERIOD_S = cONTRACT_PERIOD_S;
 	}
 
-	public Date getCONTRACT_PERIOD_E() {
+	public String getCONTRACT_PERIOD_E() {
 		return CONTRACT_PERIOD_E;
 	}
 
-	public void setCONTRACT_PERIOD_E(Date cONTRACT_PERIOD_E) {
+	public void setCONTRACT_PERIOD_E(String cONTRACT_PERIOD_E) {
 		CONTRACT_PERIOD_E = cONTRACT_PERIOD_E;
 	}
 
@@ -220,11 +218,11 @@ public class CUSTOM {
 		REGI_INFO_MAN = rEGI_INFO_MAN;
 	}
 
-	public Date getREGI_INFO_DATE() {
+	public String getREGI_INFO_DATE() {
 		return REGI_INFO_DATE;
 	}
 
-	public void setREGI_INFO_DATE(Date rEGI_INFO_DATE) {
+	public void setREGI_INFO_DATE(String rEGI_INFO_DATE) {
 		REGI_INFO_DATE = rEGI_INFO_DATE;
 	}
 
@@ -236,11 +234,11 @@ public class CUSTOM {
 		MODI_INFO_MAN = mODI_INFO_MAN;
 	}
 
-	public Date getMODI_INFO_DATE() {
+	public String getMODI_INFO_DATE() {
 		return MODI_INFO_DATE;
 	}
 
-	public void setMODI_INFO_DATE(Date mODI_INFO_DATE) {
+	public void setMODI_INFO_DATE(String mODI_INFO_DATE) {
 		MODI_INFO_DATE = mODI_INFO_DATE;
 	}
 

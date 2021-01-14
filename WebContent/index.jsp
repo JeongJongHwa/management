@@ -45,12 +45,9 @@ function postNumFind() {
 <script>
 $(document).ready(function(){
 	
-	var upDown = {
-			darkUp:"&#128077;&#127999;",
-			Up:"&#128077;&#127995;",
-			darkDown:"&#128078;&#127999;",
-			Down:"&#128078;&#127995;"
-	} ;
+	$("button[delBtn]").on('click',function(e){
+		location.href='deleteCustomAction.jsp?BUSI_NUM='+$("#BUSI_NUM").val()+'&CUSTOM='+$("#CUSTOM").val();
+	});
 	
 	$('button[btn5]').on('click',function(e){
 		
@@ -77,6 +74,8 @@ $(document).ready(function(){
 				
 				var results = data;
 	            var str = "";
+	            
+	            console.log( results );
 	            $.each(results , function(i){
 	                str += "<tr class='abab' style='cursor: pointer' rn="+results[i].BUSI_NUM+" ><td>" + results[i].BUSI_NUM +
 	                						'</td><td>' + results[i].CUSTOM + '</td>';
@@ -92,8 +91,13 @@ $(document).ready(function(){
 		});
 	});
 	
-	$(document).on('click','.abab',function(e){
-		console.log( $(this).attr('rn') );
+	$(document).on('dblclick','.abab',function(e){
+
+		$('#rightTable').html("<thead><tr class='text-center'><th class='text-center'>"+
+				"사무소</th><th class='text-center'>은행</th><th class='text-center'>계좌번호</th></tr></thead>"+
+				"<tbody><tr><td><input type='text' name='FACTORY' class='form-data in_s'  maxlength='20' /></td>"+
+				"<td><input type='text' name='TRADE_BANK' class='form-data in_s'  maxlength='20' /></td>"+
+				"<td><input type='text' name='ACCOUNT_NUM' class='form-data in_s'  maxlength='20' /></td></tr></tbody>");
 		
 		var param = {
 				BUSI_NUM:$(this).attr('rn'),	
@@ -111,23 +115,73 @@ $(document).ready(function(){
 			contentType: "application/json; charset=utf-8",
 			success:function(data){
 				
-				console.log(data);
+				$("form").each(function() {
+				       this.reset();
+
+				      $("input[type=hidden]").val(''); //reset만으로 hidden type은 리셋이 안되기 때문에 써줌
+				  });
 				
-				console.log( data['CUSTOM'] );
-				console.log( data['CUSTOM'] );
+				var CUSTOM = JSON.parse( data['CUSTOM'] );
+				var ACCOUNT = JSON.parse( data['ACCOUNT'] ); 
 				
-				console.log( data['ACCOUNT']);
 				
-				return 0;
 				
-				var results = data;
-	            var str = "";
-	            $.each(results , function(i){
-	                str += "<tr class='abab' style='cursor: pointer' rn="+results[i].BUSI_NUM+" ><td>" + results[i].BUSI_NUM +
-	                						'</td><td>' + results[i].CUSTOM + '</td>';
-	                str += '</tr>';
-	           });
-	           $('#table').append(str); 
+				if(Object.keys(ACCOUNT).length == 0){
+					
+				} else {
+					var str;
+		               
+					str += "<tr><td>" +ACCOUNT.FACTORY +
+					'</td><td>' + ACCOUNT.TRADE_BANK + '</td><td>'+ACCOUNT.ACCOUNT_NUM+'</td>';
+					str += '</tr>';
+					
+				 $('#rightTable').append(str); 
+				}
+				//console.log( CUSTOM );
+				
+				//console.log( CUSTOM.BUSI_NUM );
+
+				var type;
+				
+				$.each( CUSTOM, function (key,value){
+					
+					type = $(".right_row *[name="+key+"]").attr("type");
+					
+					if( type == "text" ){
+						$(".right_row *[name="+key+"]").val(value);
+					} else if ( type== "checkbox" ){
+						
+						if( value == true ){
+							$(".right_row *[name="+key+"]").prop('checked',true);
+						}else {
+							$(".right_row *[name="+key+"]").prop('checked',false);
+						}					
+						
+					} else if ( type== "radio" ){
+						
+						console.log( "key : "+key+"   value : "+value );
+						if( value === true ){
+							$(".right_row *[name="+key+"][value=1]").prop('checked',true);
+						} else {
+							$(".right_row *[name="+key+"][value=0]").prop('checked',true);
+						}
+						
+					} else if( type == "date" ){
+						
+						$(".right_row *[name="+key+"]").val(value);
+						
+					} else if( $("select[name="+key+"]").attr("name") == key ){
+						console.log( "key : "+key+"   value : "+value );
+						if( value == true ){
+							$("#"+key).val("1");
+							//$("select[name="+key+"]").attr("name").val("1");
+						} else {
+							$("#"+key).val("0");
+							//$("select[name="+key+"]").attr("name").val("0");
+						}
+					}
+				});
+
 				
 			},
 			error:function(request, status, error){
@@ -143,9 +197,6 @@ $(document).ready(function(){
 	
 });
 
-function rightInfoGet(BUSI_NUM){
-	console.log(BUSI_NUM);
-}
 
 </script>
 
@@ -189,22 +240,23 @@ function rightInfoGet(BUSI_NUM){
 				<li class="active"><a class="navbar-brand" href="#">거래처 관리</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a>조회</a></li>
-				<li><a>저장</a></li>
-				<li><a>삭제</a></li>
+				<li><button class="btn btn-primary">조회</button></li>
+				<li><button type="submit" form="saveForm" class="btn btn-primary" >저장</button></li>
+				<li><button delBtn class="btn btn-primary" >삭제</button></li>
 			</ul>
 		</div>
 	</div>
 
 	<div class="container">
+	
 		<div class="row">
 			<div class="col-sm-3 pull-left" style="border: 1px solid black;">
 				<div class="row">
 					<br /> <label for="BUSI_NUM_LT">사업자번호</label> 
-					<input type="text" id="BUSI_NUM_LT" name="BUSI_NUM" class="form-data in_s" maxlength="20" />
+					<input type="text" id="BUSI_NUM_LT" name="BUSI_NUM_LT" class="form-data in_s" maxlength="20" />
 					<div></div>
 					<label for="CUSTOM_LT">거래처명 </label> 
-					<input type="text" id="CUSTOM_LT" name="CUSTOM" class="form-data in_s" maxlength="20" />
+					<input type="text" id="CUSTOM_LT" name="CUSTOM_LT" class="form-data in_s" maxlength="20" />
 					<button type="button" class="btn btn-right pull-right btn_s" btn5>조회</button>
 					<br />
 
@@ -229,8 +281,9 @@ function rightInfoGet(BUSI_NUM){
 
 
 
-
-
+<form action="writeCustomAction.jsp" id="saveForm" method="post" name="indexForm">
+		<div class="right_row">
+		
 			<div class="col-sm-9" style="border: 1px solid black;">
 				<div class="row" style="padding: 1px;">
 					<div class="col-sm-2">
@@ -335,13 +388,13 @@ function rightInfoGet(BUSI_NUM){
 					</div>
 					<div class="col-sm-4">
 						<input type="radio"  name="CO_YN" value="0" /> <label for="CO_YN">법인</label>
-						<input type="radio" name="CO_YN" value="1" checked="checked" /> <label for="CO_YN">개인</label>
+						<input type="radio" name="CO_YN" value="1" /> <label for="CO_YN">개인</label>
 					</div>
 					<div class="col-sm-2">
 						<label for="FOREIGN_YN">해외여부</label>
 					</div>
 					<div class="col-sm-4">
-						<input type="radio" name="FOREIGN_YN" value="0" checked="checked" /> <label for="FOREIGN_YN">국내</label>
+						<input type="radio" name="FOREIGN_YN" value="0" /> <label for="FOREIGN_YN">국내</label>
 						<input type="radio" name="FOREIGN_YN" value="1"  /> <label for="FOREIGN_YN">해외</label>
 					</div>
 				</div>
@@ -350,17 +403,17 @@ function rightInfoGet(BUSI_NUM){
 						<label for="TAX_YN">과세구분</label>
 					</div>
 					<div class="col-sm-4">
-						<select name="TAX_YN">
+						<select id="TAX_YN" name="TAX_YN">
 							<option value="0">과세/면세</option>
 							<option value="1">비과세</option>
-							</select>
+						</select>
 					</div>
 					<div class="col-sm-2">
-						<label for="BUSI_NUM">국가</label>
+						<label for="COUNTRY_ENG">국가</label>
 					</div>
 					<div class="col-sm-4">
-						<input type="text" id="BUSI_NUM" name="BUSI_NUM" class="form-data in_s1" /> <input type="text" name="BUSI_NUM" class="form-data in_s2"
-							maxlength="20" />
+						<input type="text" name="COUNTRY_ENG"  class="form-data in_s1" maxlength="20" />
+						<input type="text" name="COUNTRY_KOR" class="form-data in_s2" maxlength="20" />
 						<button type="button" class="btn btn-right pull-right btn_s">검색</button>
 					</div>
 				</div>
@@ -383,30 +436,30 @@ function rightInfoGet(BUSI_NUM){
 						<label for="CONTRACT_PERIOD_S">계약기간</label>
 					</div>
 					<div class="col-sm-10">
-						<input type="date" id="BUSI_NUM" name="BUSI_NUM" class="form-data in_s" /> ~ <input type="date" name="BUSI_NUM" class="form-data in_s"
-							/>
+						<input type="date" name="CONTRACT_PERIOD_S" date-type="1" class="form-data in_s" /> ~ 
+						<input type="date" name="CONTRACT_PERIOD_E" date-type="1" class="form-data in_s"	/>
 					</div>
 				</div>
 				<div class="row" style="padding: 1px;">
 					<div class="col-sm-2">
-						<label for="BUSI_NUM">등록정보</label>
+						<label for="REGI_INFO_MAN">등록정보</label>
 					</div>
 					<div class="col-sm-4">
-						<input type="text" name="BUSI_NUM" class="form-data in_s1" maxlength="10" />
-						<input type="date" name="BUSI_NUM" class="form-data in_s2" />
+						<input type="text" name="REGI_INFO_MAN" class="form-data in_s1" maxlength="10" />
+						<input type="text" name="REGI_INFO_DATE" readonly="readonly" date-type="2" class="form-data in_s" />
 					</div>
 
 					<div class="col-sm-2">
-						<label for="BUSI_NUM">변경정보</label>
+						<label for="MODI_INFO_MAN">변경정보</label>
 					</div>
 					<div class="col-sm-4">
-						<input type="text" name="BUSI_NUM" class="form-data in_s1" maxlength="10" />
-						<input type="date" name="BUSI_NUM" class="form-data in_s2" maxlength="10" />
+						<input type="text" name="MODI_INFO_MAN" class="form-data in_s1" maxlength="10" />
+						<input type=text name="MODI_INFO_DATE" readonly="readonly" date-type="2" class="form-data in_s2" />
 					</div>
 				</div>
 				<div class="col-sm-12">(거래처 계좌정보)</div>
 
-				<table class="table text-center table-bordered">
+				<table id="rightTable" class="table text-center table-bordered">
 					<thead>
 						<tr class="text-center">
 							<th class="text-center">사무소</th>
@@ -416,22 +469,24 @@ function rightInfoGet(BUSI_NUM){
 					</thead>
 					<tbody>
 						<tr>
-							<td>1</td>
-							<td>2</td>
-							<td>3</td>
+							<td><input type="text" name="FACTORY" class="form-data in_s"  maxlength="20" /></td>
+							<td><input type="text" name="TRADE_BANK" class="form-data in_s"  maxlength="20" /></td>
+							<td><input type="text" name="ACCOUNT_NUM" class="form-data in_s"  maxlength="20" /></td>
 						</tr>
 						<tr>
-							<td>4</td>
-							<td>5</td>
-							<td>6</td>
+							<td></td>
+							<td></td>
+							<td></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
+			
+			</div>
 
 
+</form>
 		</div>
-
 	</div>
 </body>
 </html>
