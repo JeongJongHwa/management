@@ -25,7 +25,7 @@ public class AccountDAO {
 		
 	}
 	
-public ACCOUNT getAccount(String BUSI_NUM) {
+	public ACCOUNT getAccount(String BUSI_NUM) {
 		
 		String SQL = "SELECT A.BUSI_NUM,A.FACTORY,A.TRADE_BANK,A.ACCOUNT_NUM FROM "
 				+ "CUSTOM C JOIN ACCOUNT A ON C.BUSI_NUM=A.BUSI_NUM  WHERE A.BUSI_NUM=?";
@@ -53,6 +53,28 @@ public ACCOUNT getAccount(String BUSI_NUM) {
 		
 		return null;
 		
+	}
+	
+	public int write(ACCOUNT account) {
+		
+		String SQL = "INSERT INTO Account VALUES(?,?,?,?)";
+		
+		try {
+			
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			
+			pstmt.setString(1,account.getBUSI_NUM());         
+			pstmt.setString(2,account.getFACTORY());        
+			pstmt.setString(3,account.getTRADE_BANK());     
+			pstmt.setString(4,account.getACCOUNT_NUM()); 
+			                
+		 	return pstmt.executeUpdate();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return -1; // db error 
 	}
 
 

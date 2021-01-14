@@ -36,6 +36,7 @@
 <jsp:setProperty property="MODI_INFO_DATE" name="custom"   />
 
 <jsp:useBean id="account" class="beproject.ACCOUNT" scope="page"></jsp:useBean>
+<jsp:setProperty property="BUSI_NUM" name="account"   />
 <jsp:setProperty property="FACTORY" name="account"   />
 <jsp:setProperty property="TRADE_BANK" name="account"   />
 <jsp:setProperty property="ACCOUNT_NUM" name="account"   />
@@ -92,6 +93,22 @@
 					script.println("</script>");
 				 
 			 } else {
+				 
+				 if( accountRunning == 1 ){
+					 AccountDAO aDAO = new AccountDAO();
+					 if( aDAO.write(account) == -1 ){
+						 PrintWriter script = response.getWriter();
+						 script.println("<script>");
+							script.println("alert('dberror 발생')");
+							script.println("history.go(-1)");
+							script.println("</script>");
+					 } else {
+						// custom rollback;
+						 
+					 }
+							 
+							 
+				 }
 				 
 				 PrintWriter script = response.getWriter();
 					script.println("<script>");
