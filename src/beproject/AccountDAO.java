@@ -76,6 +76,29 @@ public class AccountDAO {
 		
 		return -1; // db error 
 	}
+	
+public int update(ACCOUNT account) {
+		
+		String SQL = "UPDATE ACCOUNT SET FACTORY =?,TRADE_BANK=?,ACCOUNT_NUM=? WHERE BUSI_NUM=?";
+		
+		try {
+			
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			
+			         
+			pstmt.setString(1,account.getFACTORY());        
+			pstmt.setString(2,account.getTRADE_BANK());     
+			pstmt.setString(3,account.getACCOUNT_NUM());
+			pstmt.setString(4,account.getBUSI_NUM());
+			                
+		 	return pstmt.executeUpdate();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return -1; // db error 
+	}
 
 
 

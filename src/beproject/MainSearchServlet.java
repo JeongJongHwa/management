@@ -62,8 +62,6 @@ public class MainSearchServlet extends HttpServlet {
 		
 		Gson gson = new Gson();
 		
-		System.out.println( gson.toJson(list) );
-		
 		response.getWriter().print( gson.toJson(list) );
 	
 	}

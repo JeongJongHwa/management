@@ -12,38 +12,75 @@
 function postNumFind() {
     new daum.Postcode({
         oncomplete: function(data) {
-            // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+            
+        	// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
 
-            // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
+            // 각 주소의 노출 규칙에 따라 주소를 조합한다.
             // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-            var roadAddr = data.roadAddress; // 도로명 주소 변수
-            var extraRoadAddr = ''; // 참고 항목 변수
+            var addr = ''; // 주소 변수
+            var extraAddr = ''; // 참고항목 변수
 
-            // 법정동명이 있을 경우 추가한다. (법정리는 제외)
-            // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
-            if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
-                extraRoadAddr += data.bname;
+            //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+            if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                addr = data.roadAddress;
+            } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                addr = data.jibunAddress;
             }
-            // 건물명이 있고, 공동주택일 경우 추가한다.
-            if(data.buildingName !== '' && data.apartment === 'Y'){
-               extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-            }
-            // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
-            if(extraRoadAddr !== ''){
-                extraRoadAddr = ' (' + extraRoadAddr + ')';
+
+            // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+            if(data.userSelectedType === 'R'){
+                // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                    extraAddr += data.bname;
+                }
+                // 건물명이 있고, 공동주택일 경우 추가한다.
+                if(data.buildingName !== '' && data.apartment === 'Y'){
+                    extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                if(extraAddr !== ''){
+                    extraAddr = ' (' + extraAddr + ')';
+                }
+                // 조합된 참고항목을 해당 필드에 넣는다.
+                document.getElementById("ADDR2").value = extraAddr;
+            
+            } else {
+                document.getElementById("ADDR2").value = '';
             }
 
             // 우편번호와 주소 정보를 해당 필드에 넣는다.
             document.getElementById('POST_NUM').value = data.zonecode;
+            document.getElementById("ADDR1").value = addr;
+            // 커서를 상세주소 필드로 이동한다.
+            document.getElementById("ADDR2").focus();
+        	
+        	
+            document.getElementById('POST_NUM').value = data.zonecode;
+            document.getElementById('POST_NUM').value = data.zonecode;
+            document.getElementById('POST_NUM').value = data.zonecode;
            
         }
     }).open();
+}
+
+function open_popup(){
+    window.open('nationChoice.jsp','windowPop','width=600, height=600, left=400, top=400,resizable = yes');
+}
+
+function nationChoice(ENG_NAME,KOREA_NAME){
+	 document.getElementById('COUNTRY_ENG').value = ENG_NAME+"";
+	 document.getElementById('COUNTRY_KOR').value = KOREA_NAME+"";
 }
 </script>
 
 
 <script>
 $(document).ready(function(){
+	
+	$("button[nationBtn]").on('click',function(e){
+		
+	});
 	
 	$("button[delBtn]").on('click',function(e){
 		location.href='deleteCustomAction.jsp?BUSI_NUM='+$("#BUSI_NUM").val()+'&CUSTOM='+$("#CUSTOM").val();
@@ -75,7 +112,6 @@ $(document).ready(function(){
 				var results = data;
 	            var str = "";
 	            
-	            console.log( results );
 	            $.each(results , function(i){
 	                str += "<tr class='abab' style='cursor: pointer' rn="+results[i].BUSI_NUM+" ><td>" + results[i].BUSI_NUM +
 	                						'</td><td>' + results[i].CUSTOM + '</td>';
@@ -93,12 +129,14 @@ $(document).ready(function(){
 	
 	$(document).on('dblclick','.abab',function(e){
 
-		$('#rightTable').html("<thead><tr class='text-center'><th class='text-center'>"+
+		$('#rightTable').html(" ");
+		
+		/* $('#rightTable').html("<thead><tr class='text-center'><th class='text-center'>"+
 				"사무소</th><th class='text-center'>은행</th><th class='text-center'>계좌번호</th></tr></thead>"+
 				"<tbody><tr><td><input type='text' name='FACTORY' class='form-data in_s'  maxlength='20' /></td>"+
 				"<td><input type='text' name='TRADE_BANK' class='form-data in_s'  maxlength='20' /></td>"+
 				"<td><input type='text' name='ACCOUNT_NUM' class='form-data in_s'  maxlength='20' /></td></tr></tbody>");
-		
+		 */
 		var param = {
 				BUSI_NUM:$(this).attr('rn'),	
 		};
@@ -124,22 +162,34 @@ $(document).ready(function(){
 				var CUSTOM = JSON.parse( data['CUSTOM'] );
 				var ACCOUNT = JSON.parse( data['ACCOUNT'] ); 
 				
+				var tableHead = "<thead><tr class='text-center'><th class='text-center'>"+
+				"사무소</th><th class='text-center'>은행</th><th class='text-center'>계좌번호</th></tr></thead>";
 				
 				
 				if(Object.keys(ACCOUNT).length == 0){
 					
+					 $('#rightTable').html(tableHead+
+					"<tbody><tr><td><input type='text' name='FACTORY' class='form-data in_s'  maxlength='20' /></td>"+
+					"<td><input type='text' name='TRADE_BANK' class='form-data in_s'  maxlength='20' /></td>"+
+					"<td><input type='text' name='ACCOUNT_NUM' class='form-data in_s'  maxlength='20' /></td></tr></tbody>");
+			 
+					
 				} else {
-					var str;
+					var str=tableHead;
 		               
-					str += "<tr><td>" +ACCOUNT.FACTORY +
-					'</td><td>' + ACCOUNT.TRADE_BANK + '</td><td>'+ACCOUNT.ACCOUNT_NUM+'</td>';
-					str += '</tr>';
+					str += "<tbody><tr><td><input type='text' name='FACTORY' class='form-data in_s'  maxlength='20' value="+ACCOUNT.FACTORY+"/></td>" 
+					+"<td><input type='text' name='TRADE_BANK' class='form-data in_s'  maxlength='20' value="+ACCOUNT.TRADE_BANK+"/></td>" 
+					+"<td><input type='text' name='ACCOUNT_NUM' class='form-data in_s'  maxlength='20' value="+ACCOUNT.ACCOUNT_NUM+"/></td></tr></tbody>" ;
 					
 				 $('#rightTable').append(str); 
+				 
+				/*  <td><input type="text" name="FACTORY" class="form-data in_s"  maxlength="20" /></td>
+					<td><input type="text" name="TRADE_BANK" class="form-data in_s"  maxlength="20" /></td>
+					<td><input type="text" name="ACCOUNT_NUM" class="form-data in_s"  maxlength="20" /></td> */
+				 
+				 
+				 
 				}
-				//console.log( CUSTOM );
-				
-				//console.log( CUSTOM.BUSI_NUM );
 
 				var type;
 				
@@ -159,7 +209,7 @@ $(document).ready(function(){
 						
 					} else if ( type== "radio" ){
 						
-						console.log( "key : "+key+"   value : "+value );
+						//console.log( "key : "+key+"   value : "+value );
 						if( value === true ){
 							$(".right_row *[name="+key+"][value=1]").prop('checked',true);
 						} else {
@@ -171,7 +221,8 @@ $(document).ready(function(){
 						$(".right_row *[name="+key+"]").val(value);
 						
 					} else if( $("select[name="+key+"]").attr("name") == key ){
-						console.log( "key : "+key+"   value : "+value );
+						
+						//console.log( "key : "+key+"   value : "+value );
 						if( value == true ){
 							$("#"+key).val("1");
 							//$("select[name="+key+"]").attr("name").val("1");
@@ -253,8 +304,9 @@ $(document).ready(function(){
 			<div class="col-sm-3 pull-left" style="border: 1px solid black;">
 				<div class="row">
 					<br /> <label for="BUSI_NUM_LT">사업자번호</label> 
-					<input type="text" id="BUSI_NUM_LT" name="BUSI_NUM_LT" class="form-data in_s" maxlength="20" />
-					<div></div>
+					<input type="text" id="BUSI_NUM_LT" name="BUSI_NUM_LT" class="form-data in_s" maxlength="20" /></br>
+					
+
 					<label for="CUSTOM_LT">거래처명 </label> 
 					<input type="text" id="CUSTOM_LT" name="CUSTOM_LT" class="form-data in_s" maxlength="20" />
 					<button type="button" class="btn btn-right pull-right btn_s" btn5>조회</button>
@@ -412,9 +464,9 @@ $(document).ready(function(){
 						<label for="COUNTRY_ENG">국가</label>
 					</div>
 					<div class="col-sm-4">
-						<input type="text" name="COUNTRY_ENG"  class="form-data in_s1" maxlength="20" />
-						<input type="text" name="COUNTRY_KOR" class="form-data in_s2" maxlength="20" />
-						<button type="button" class="btn btn-right pull-right btn_s">검색</button>
+						<input type="text" id="COUNTRY_ENG" name="COUNTRY_ENG"  class="form-data in_s1" maxlength="20" />
+						<input type="text" id="COUNTRY_KOR" name="COUNTRY_KOR" class="form-data in_s2" maxlength="20" />
+						<a href="#" class="btn btn-primary" onclick="open_popup();">검색</a>
 					</div>
 				</div>
 				<div class="row" style="padding: 1px;">
@@ -454,7 +506,7 @@ $(document).ready(function(){
 					</div>
 					<div class="col-sm-4">
 						<input type="text" name="MODI_INFO_MAN" class="form-data in_s1" maxlength="10" />
-						<input type=text name="MODI_INFO_DATE" readonly="readonly" date-type="2" class="form-data in_s2" />
+						<input type=text name="MODI_INFO_DATE" readonly="readonly" date-type="2" class="form-data in_s" />
 					</div>
 				</div>
 				<div class="col-sm-12">(거래처 계좌정보)</div>
@@ -468,16 +520,12 @@ $(document).ready(function(){
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
+					 	<tr>
 							<td><input type="text" name="FACTORY" class="form-data in_s"  maxlength="20" /></td>
 							<td><input type="text" name="TRADE_BANK" class="form-data in_s"  maxlength="20" /></td>
 							<td><input type="text" name="ACCOUNT_NUM" class="form-data in_s"  maxlength="20" /></td>
 						</tr>
-						<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
+						 
 					</tbody>
 				</table>
 			</div>
