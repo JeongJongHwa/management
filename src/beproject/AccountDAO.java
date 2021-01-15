@@ -55,50 +55,54 @@ public class AccountDAO {
 		
 	}
 	
-	public int write(ACCOUNT account) {
-		
-		String SQL = "INSERT INTO Account VALUES(?,?,?,?)";
-		
+	public int checkAccount(String BUSI_NUM) {
+
+		String SQL = "SELECT BUSI_NUM FROM ACCOUNT WHERE BUSI_NUM=? ";
+
 		try {
-			
+
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
-			
-			pstmt.setString(1,account.getBUSI_NUM());         
-			pstmt.setString(2,account.getFACTORY());        
-			pstmt.setString(3,account.getTRADE_BANK());     
-			pstmt.setString(4,account.getACCOUNT_NUM()); 
-			                
-		 	return pstmt.executeUpdate();
-			
-		}catch(Exception e) {
+			pstmt.setString(1, BUSI_NUM);
+			rs = pstmt.executeQuery();
+
+			// 이미 작성된건이 있다면 1
+			if (rs.next()) {
+
+				return 1;
+
+			}
+			// 이미 작성된게 없다면 0
+			return 0;
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return -1; // db error 
+
+		return -1; // db error
+
 	}
 	
-public int update(ACCOUNT account) {
-		
+	public void update(ACCOUNT account) throws Exception{
+
 		String SQL = "UPDATE ACCOUNT SET FACTORY =?,TRADE_BANK=?,ACCOUNT_NUM=? WHERE BUSI_NUM=?";
-		
+
 		try {
-			
+
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
-			
-			         
-			pstmt.setString(1,account.getFACTORY());        
-			pstmt.setString(2,account.getTRADE_BANK());     
-			pstmt.setString(3,account.getACCOUNT_NUM());
-			pstmt.setString(4,account.getBUSI_NUM());
-			                
-		 	return pstmt.executeUpdate();
-			
-		}catch(Exception e) {
-			e.printStackTrace();
+
+			pstmt.setString(1, account.getFACTORY());
+			pstmt.setString(2, account.getTRADE_BANK());
+			pstmt.setString(3, account.getACCOUNT_NUM());
+			pstmt.setString(4, account.getBUSI_NUM());
+
+			pstmt.executeUpdate();
+
+		} catch (Exception e) {
+			throw new Exception("error");
 		}
-		
-		return -1; // db error 
+
 	}
+
 
 
 

@@ -177,9 +177,9 @@ $(document).ready(function(){
 				} else {
 					var str=tableHead;
 		               
-					str += "<tbody><tr><td><input type='text' name='FACTORY' class='form-data in_s'  maxlength='20' value="+ACCOUNT.FACTORY+"/></td>" 
-					+"<td><input type='text' name='TRADE_BANK' class='form-data in_s'  maxlength='20' value="+ACCOUNT.TRADE_BANK+"/></td>" 
-					+"<td><input type='text' name='ACCOUNT_NUM' class='form-data in_s'  maxlength='20' value="+ACCOUNT.ACCOUNT_NUM+"/></td></tr></tbody>" ;
+					str += "<tbody><tr><td><input type='text' name='FACTORY' class='form-data in_s'  maxlength='20' value='"+ACCOUNT.FACTORY+"'/></td>" 
+					+"<td><input type='text' name='TRADE_BANK' class='form-data in_s'  maxlength='20' value='"+ACCOUNT.TRADE_BANK+"'/></td>" 
+					+"<td><input type='text' name='ACCOUNT_NUM' class='form-data in_s'  maxlength='20' value='"+ACCOUNT.ACCOUNT_NUM+"'/></td></tr></tbody>" ;
 					
 				 $('#rightTable').append(str); 
 				 

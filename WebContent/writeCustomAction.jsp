@@ -78,89 +78,99 @@
 			// 만약 사업자번호와 거래처명이 들어와서 기존에 있다면 수정 -> 기존에 없다면 생성
 
 			CustomDAO cDAO = new CustomDAO();
-			int result = cDAO.checkCustom(custom.getBUSI_NUM(), custom.getCUSTOM()); // 1이면 수정 0이면 생성
+			AccountDAO aDAO = new AccountDAO();
+			int checkCustom = cDAO.checkCustom(custom.getBUSI_NUM(), custom.getCUSTOM()); // 1이면 수정 0이면 생성
+			int checkAccount = aDAO.checkAccount(custom.getBUSI_NUM());
 
-			if (result == 0) {
+			System.out.println("checkCustom : " + checkCustom);
+			System.out.println("accountRunning : " + accountRunning);
+			System.out.println("checkAccount : " + checkAccount);
 
-				int last = cDAO.write(custom);
+			// checkCustom 0 생성단계 1 수정단계
+			// checkAccount 0 생성단계 1 수정단계
+			// accountRunning 0이면 동작안함 1이면 동작함
 
-				if (last == -1) {
+			PrintWriter script = response.getWriter();
+			// checkcustom 생성 account x
+			if (checkCustom == 0 && accountRunning == 0) {
 
-					PrintWriter script = response.getWriter();
-					script.println("<script>");
-					script.println("alert('dberror 발생  1')");
-					script.println("history.go(-1)");
-					script.println("</script>");
-
-				} else {
-
-					if (accountRunning == 1) {
-						AccountDAO aDAO = new AccountDAO();
-						if (aDAO.write(account) == -1) {
-							PrintWriter script = response.getWriter();
-							script.println("<script>");
-							script.println("alert('dberror 발생  2')");
-							script.println("history.go(-1)");
-							script.println("</script>");
-						} else {
-							// custom rollback;
-
-						}
-
-					}
-
-					PrintWriter script = response.getWriter();
-					script.println("<script>");
-					script.println("alert('저장되었습니다.')");
-					script.println("location.href='index.jsp'");
-					script.println("</script>");
-
-				}
-
-			} else if (result == 1) {
-
-				int last = cDAO.update(custom);
-
-				if (last == -1) {
-
-					PrintWriter script = response.getWriter();
-					script.println("<script>");
-					script.println("alert('dberror 발생  3')");
-					script.println("history.go(-1)");
-					script.println("</script>");
-
-				} else {
-
-					if (accountRunning == 1) {
-						
-						AccountDAO aDAO = new AccountDAO();
-						if (aDAO.update(account) == -1) {
-							PrintWriter script = response.getWriter();
-							script.println("<script>");
-							script.println("alert('dberror 발생  4')");
-							script.println("history.go(-1)");
-							script.println("</script>");
-						} else {
-							// custom rollback;
-
-						}
-					}
-
-					PrintWriter script = response.getWriter();
-					script.println("<script>");
-					script.println("alert('저장되었습니다.')");
-					script.println("location.href='index.jsp'");
-					script.println("</script>");
-
-				}
-
-			} else {
-				PrintWriter script = response.getWriter();
+				cDAO.write(custom);
 				script.println("<script>");
-				script.println("alert('dberror 발생')");
-				script.println("history.go(-1)");
+				script.println("alert('저장되었습니다.')");
+				script.println("location.href='index.jsp'");
 				script.println("</script>");
+
+				// checkcustom 생성 account 생성
+			} else if (checkCustom == 0 && accountRunning == 1 && checkAccount == 0) {
+
+				if (cDAO.write(custom, account) == 1) {
+					script.println("<script>");
+					script.println("alert('저장되었습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				} else {
+					script.println("<script>");
+					script.println("alert('저장이 실패하였습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				}
+
+				// checkcustom update account 동작 x
+			} else if (checkCustom == 1 && accountRunning == 0 && checkAccount == 0) {
+
+				cDAO.update(custom);
+				script.println("<script>");
+				script.println("alert('저장되었습니다.')");
+				script.println("location.href='index.jsp'");
+				script.println("</script>");
+
+				// checkcustom update account update
+			} else if (checkCustom == 1 && accountRunning == 1 && checkAccount == 1) {
+
+				if (cDAO.update(custom, account) == 1) {
+					script.println("<script>");
+					script.println("alert('저장되었습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				} else {
+					script.println("<script>");
+					script.println("alert('저장이 실패하였습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				}
+
+				// checkcustom update account create
+			} else if (checkCustom == 1 && accountRunning == 1 && checkAccount == 0) {
+
+				if (cDAO.updateWrite(custom, account) == 1) {
+					script.println("<script>");
+					script.println("alert('저장되었습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				} else {
+					script.println("<script>");
+					script.println("alert('저장이 실패하였습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				}
+
+				// checkcustom update accountRunning 동작 x checkaccount 1
+			} else if (checkCustom == 1 && accountRunning == 0 && checkAccount == 1) {
+
+				if (cDAO.updateDelete(custom, account) == 1) {
+					script.println("<script>");
+					script.println("alert('저장되었습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				} else {
+					script.println("<script>");
+					script.println("alert('저장이 실패하였습니다.')");
+					script.println("location.href='index.jsp'");
+					script.println("</script>");
+				}
+
 			}
+
 		}
 	%>
 
